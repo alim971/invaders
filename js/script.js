@@ -19,6 +19,9 @@ ship.src = "images/ship1.png";
 var bullet = new Image();
 bullet.src = "images/eprojectile.png";
 
+/**
+ * Basic class for Sprite representation
+ */
 class Sprite {
         get height() {
             return this._height;
@@ -62,6 +65,18 @@ class Sprite {
         set x(value) {
             this._x = value;
         }
+
+    /**
+     * Basic constructor
+     * @param x
+     * @param y
+     * @param id
+     * @param img
+     * @param width
+     * @param height
+     * @param speed
+     * @param canvas
+     */
         constructor(x,y,id,img, width, height,speed,canvas) {
             this._x = x;
             this._y = y;
@@ -74,11 +89,19 @@ class Sprite {
             this.canvas = canvas;
         }
 
-        update(timeDelta, input) {
+    /**
+     * Update function that caffect behavior of the sprite
+     * @param timeDelta
+     * @param input
+     */
+    update(timeDelta, input) {
         }
     }
 
-    class PlayerSprite extends Sprite{
+/**
+ * Class representing player
+ */
+class PlayerSprite extends Sprite{
         get shouldFire() {
             return this._shouldFire;
         }
@@ -123,6 +146,9 @@ class Sprite {
         }
     }
 
+/**
+ * Class representing aliens
+ */
     class EnemySprite extends Sprite{
         get time() {
             return this._time;
@@ -152,7 +178,7 @@ class Sprite {
 
             if (this._time >= this.delay){
 
-                // Randomly shoot, based on delay so the the faster they get the more they fire.
+                // Randomly shoot,the faster, the more they fire.
                 var fireTest = Math.floor(Math.random() * (this.delay + 1));
 
                 if (fireTest < (this.delay / 200)){
@@ -180,7 +206,10 @@ class Sprite {
         };
     }
 
-    class BulletSprite extends Sprite{
+/**
+ * Class representing bullets
+ */
+class BulletSprite extends Sprite{
         constructor(x,y,id,speed,canvas) {
             super(x,y,id,bullet,30,0,speed,canvas);
             this.delay = 500;
@@ -196,7 +225,10 @@ class Sprite {
         }
     }
 
-    class Renderer {
+/**
+ * Class that renders sprites and draw them on canvas
+ */
+class Renderer {
         get player() {
             return this._player;
         }
@@ -214,9 +246,11 @@ class Sprite {
             this._height    = this._canvas.height;
         }
 
-        redraw()
+    /**
+     * Function that draw whole game on canvas
+     */
+    redraw()
         {
-            // foreground
             this._context.clearRect(0, 0,this._width, this._height);
             this._context.fillStyle = 'black';
             for (var id in this._enemies) {
@@ -243,28 +277,47 @@ class Sprite {
             }
         }
 
-        addEnemy(enemy)
+    /**
+     * Function adds enemy to canvas
+     * @param enemy
+     */
+    addEnemy(enemy)
         {
             this._enemies[enemy.id] = enemy;
         }
 
-        removeEnemy(enemy)
+    /**
+     * Function removes an enemy from canvas
+     * @param enemy
+     */
+    removeEnemy(enemy)
         {
             delete this._enemies[enemy.id];
         }
 
 
-        addBullet(projectile)
+    /**
+     * Function add bullet to canvas
+     * @param projectile
+     */
+    addBullet(projectile)
         {
             this._projectiles[projectile.id] = projectile;
         }
 
+    /**
+     * Function removes bullet from canvas
+     * @param projectile
+     */
         removeBullet(projectile)
         {
             delete this._projectiles[projectile.id];
         }
     }
 
+/**
+ * Class recording keybord input
+ */
 class InputHandeler {
         get down() {
             return this._down;
@@ -276,7 +329,7 @@ class InputHandeler {
         constructor() {
             this._down = {};
             var _this = this;
-            // capture key presses
+
             document.addEventListener("keydown", function(evt) {
                 if(evt.keyCode <= 40)
                     evt.preventDefault();
@@ -289,12 +342,20 @@ class InputHandeler {
             });
         }
 
-        isDown(keyCode) {
+    /**
+     * Is key with keyCode pressed?
+     * @param keyCode
+     * @returns {*}
+     */
+    isDown(keyCode) {
             return this._down[keyCode];
         }
     }
 
-    class Main {
+/**
+ * Main class representing the whole game
+ */
+class Main {
         get player() {
             return this._player;
         }
@@ -322,13 +383,21 @@ class InputHandeler {
             this.initGame();
         }
 
-        addEnemy(enemy) {
+    /**
+     * Adds an enemy
+     * @param enemy
+     */
+    addEnemy(enemy) {
             this.enemies[enemy.id] = enemy;
             this.renderer.addEnemy(enemy);
             ++this.enemyCount;
         }
 
-        removeEnemy(enemy) {
+    /**
+     * Removes an enemy
+     * @param enemy
+     */
+    removeEnemy(enemy) {
             delete this.enemies[enemy.id];
             this.renderer.removeEnemy(enemy);
             --this.enemyCount;
@@ -338,27 +407,39 @@ class InputHandeler {
             }
         }
 
-        addBullet(projectile) {
+    /**
+     * Adds a bullet
+     * @param projectile
+     */
+    addBullet(projectile) {
             this.projectiles[projectile.id] = projectile;
             this.renderer.addBullet(projectile);
             ++this.projectileCount;
         }
 
-        removeBullet(projectile) {
+    /**
+     * Removes a bullet
+     * @param projectile
+     */
+    removeBullet(projectile) {
             delete this.projectiles[projectile.id];
             this.renderer.removeBullet(projectile);
         }
 
-// Set up the initial game
-        initGame() {
+    /**
+     * Set up the initial game state
+     */
+    initGame() {
             this._player = new PlayerSprite(10, this.canvas.height - 30, 0, this.canvas);
             this.renderer._player = this._player;
 
             this.nextWave();
         }
 
-// Reset the enemies for the next wave
-        nextWave() {
+    /**
+     * Create new wave of aliens
+     */
+    nextWave() {
             this.wave++;
             for (let i = 0; i <= 11; i++) {
                 for (let j = 0; j <= 6; j++) {
@@ -368,7 +449,10 @@ class InputHandeler {
             }
         }
 
-        run() {
+    /**
+     * Main game loop
+     */
+    run() {
             var _this = this;
             var loop = function () {
                 _this.update();
@@ -380,7 +464,10 @@ class InputHandeler {
             window.requestAnimationFrame(loop, this.canvas);
         }
 
-        update() {
+    /**
+     * Update the state of the game and sprites and draw it on canvas
+     */
+    update() {
             if (this.gameOver !== true) {
                 if (this._player._lives < 0 || this.enemyPassed()) {
                     this.gameOver = true;
@@ -401,7 +488,6 @@ class InputHandeler {
                 projectile.update(100, this.inputHandeler);
             }
 
-            // Change the direction of the inaders movement
             if (updateLogic === true) {
                 updateLogic = false;
                 direction *= -1;
@@ -409,7 +495,7 @@ class InputHandeler {
                 enemyDownMove = 10;
             }
 
-            // Loop through the enemies update their speed baased on enemies left, check if they have fired.
+
             for (var id in this.enemies) {
                 var enemy = this.enemies[id];
                 enemy.delay = (this.enemyCount * 20) - (this.wave * 10);
@@ -427,14 +513,17 @@ class InputHandeler {
                 }
             }
 
-            // reset the y var for the enemies to move down.
             enemyDownMove = 0;
 
             // Check collisions between player, enemies, and projectiles
             this.checkCollisions();
         }
 
-        checkCollisions() {
+    /**
+     * Check if any collision of bullets with sprites appear
+     * and resolve possible collisions
+     */
+    checkCollisions() {
             for (var id in this.projectiles) {
                 var projectile = this.projectiles[id];
 
@@ -458,6 +547,12 @@ class InputHandeler {
             }
         }
 
+    /**
+     * Is there collision between sprite and sprite2?
+     * @param sprite1
+     * @param sprite2
+     * @returns {boolean}
+     */
         isCollision(sprite1,sprite2) {
             return sprite1.x >= sprite2.x && sprite1.x <= (sprite2.x + sprite2.width) && sprite1.y <= (sprite2.y + sprite2.height) && sprite1.y >= sprite2.y;
         }
